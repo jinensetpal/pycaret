@@ -49,9 +49,9 @@ class DagshubLogger(MlflowLogger):
         token = os.environ["DAGSHUB_USER_TOKEN"]
         if not token:
             token = dagshub.auth.get_token()
-        os.environ["MLFLOW_TRACKING_TOKEN"] = token
-#         os.environ["MLFLOW_TRACKING_USERNAME"] = token
-#         os.environ["MLFLOW_TRACKING_PASSWORD"] = token
+#         os.environ["MLFLOW_TRACKING_TOKEN"] = token
+        os.environ["MLFLOW_TRACKING_USERNAME"] = token
+        os.environ["MLFLOW_TRACKING_PASSWORD"] = token
         
         # Set DagsHub repo_name and repo_owner
         if  not "dagshub" in os.getenv("MLFLOW_TRACKING_URI") and (not self.repo_name or not self.repo_owner):
