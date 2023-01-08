@@ -67,7 +67,7 @@ class DagshubLogger(MlflowLogger):
             self.remote = os.getenv("MLFLOW_TRACKING_URI")
 
         self.repo = Repo(
-            owner=self.repo_owner
+            owner=self.repo_owner,
             name=self.repo_name,
             branch=os.getenv("BRANCH", "main"),
         )
