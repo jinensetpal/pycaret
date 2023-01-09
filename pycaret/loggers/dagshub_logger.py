@@ -53,7 +53,7 @@ class DagshubLogger(MlflowLogger):
         os.environ["MLFLOW_TRACKING_PASSWORD"] = token
         
         # Set DagsHub repo_name and repo_owner
-        if  not "dagshub" in os.getenv("MLFLOW_TRACKING_URI") and (not self.repo_name or not self.repo_owner):
+        if  not "dagshub.com" in os.getenv("MLFLOW_TRACKING_URI") and (not self.repo_name or not self.repo_owner):
             self.repo_name, self.repo_owner = self.splitter(
                 input("Please insert your repository owner_name/repo_name:")
             )
