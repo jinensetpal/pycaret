@@ -45,24 +45,30 @@ class DagshubLogger(MlflowLogger):
         return splitted[1], splitted[0]
 
     def init_experiment(self, *args, **kargs):
-        # check token exist or not:
-        token = dagshub.auth.get_token()
+        # Set DagsHub TOKEN
+        token = os.environ["DAGSHUB_USER_TOKEN"]
+        if not token:
+            token = dagshub.auth.get_token()
         os.environ["MLFLOW_TRACKING_USERNAME"] = token
         os.environ["MLFLOW_TRACKING_PASSWORD"] = token
-
-        # Check mlflow environment variable is set:
-        if not self.repo_name or not self.repo_owner:
+        
+        # Set DagsHub repo_name and repo_owner
+        if  not "dagshub.com" in os.getenv("MLFLOW_TRACKING_URI") and (not self.repo_name or not self.repo_owner):
             self.repo_name, self.repo_owner = self.splitter(
                 input("Please insert your repository owner_name/repo_name:")
             )
-
-        if not self.remote or "dagshub" not in os.getenv("MLFLOW_TRACKING_URI"):
+        # Set DagsHub repo_name and repo_owner using MLflow URI    
+        elif not self.repo_name or not self.repo_owner:
+            split_mlflow_uri = os.getenv("MLFLOW_TRACKING_URI").split("/")
+            self.repo_name, self.repo_owner = split_mlflow_uri[-1].split(".")[0], split_mlflow_uri[-2]
+        
+        if not self.remote:
             dagshub.init(repo_name=self.repo_name, repo_owner=self.repo_owner)
             self.remote = os.getenv("MLFLOW_TRACKING_URI")
 
         self.repo = Repo(
-            owner=self.remote.split(os.sep)[-2],
-            name=self.remote.split(os.sep)[-1].replace(".mlflow", ""),
+            owner=self.repo_owner,
+            name=self.repo_name,
             branch=os.getenv("BRANCH", "main"),
         )
         self.dvc_folder = self.repo.directory(str(self.paths["dvc_directory"]))
